@@ -75,6 +75,20 @@ def caesar_cipher(string, shift_factor)
       end
     end
     end
+    final_transformed_letters = final_transformed_letters.compact
+
+    # check if original string has any empty spaces and if yes, add them to the final string
+  while (string.join.count " ") != (final_transformed_letters.join.count " ") do
+    
+    if string.index(" ") != nil
+       string.each_with_index do |v,i|
+         if v == " "
+           final_transformed_letters.insert(i, " ")
+         end
+        end
+         
+    end
+  end
   
 
     # transform the array of letters into a string and return it
