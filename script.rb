@@ -1,104 +1,49 @@
-def caesar_cipher(string, shift_factor) 
-  # assign the original string to a variable to use later
-  og_string = string
+def caesar_cipher(string, key)
+  alphabet = %w(a b c d e f g h i j k l m n o p q r s t u v w x y z)
+  shifted_string_arr = []
 
-  if shift_factor > 32 || shift_factor < 0 || string == ""
-    return
-  else
-    # create a hash with letters as keys and numbers as values
-    my_hash = Hash.new(0)
-    letter_nr = 0
-    ('a'..'z').each do |letter|
-      letter_nr += 1
-      my_hash[letter] = letter_nr
+  # shift the letters by the 'key' amount of places
+  string_arr = string.split("")
+  string_arr.each do |char|
+    unless alphabet.include?(char.downcase)
+      shifted_string_arr.push(char)
+      next
     end
 
-    # transform the string into an array of lowercase letters
-    string_ar = string.downcase.split('')
-
-    # transform an array of letters into an array with hashes consisting of letters from the string as keys and corresponding numbers as values
-    transformed_string_ar = string_ar.map do |letter|
-      my_hash.select do |key, _value|
-        letter == key
+    index = alphabet.index(char.downcase)
+    if key.positive?
+      key.times do
+        if index == 25
+          index = 0
+        else
+          index += 1
+        end
       end
-    end
-
-    # create an array with only the corresponding numbers
-    numbers_ar = []
-    transformed_string_ar.each do |item|
-      item.each do |_key, value|
-        numbers_ar.push(value)
-      end
-    end
-
-    # increment the numbers by the shift_factor
-    new_numbers_ar = numbers_ar.map do |number|
-      number += shift_factor
-    end
-    final_numbers_ar = new_numbers_ar.map do |n|
-      if n > 26
-        n -= 26
-      else
-        n
-      end
-    end
-
-    # create an array with hashes with the numbers as values and the corresponding letters as keys
-    transformed_numbers_ar = final_numbers_ar.map do |number|
-      my_hash.select do |_key,value|
-        number == value
-      end
-    end
-
-    # create an array with only the corresponding letters
-    final_transformed_letters = []
-    transformed_numbers_ar.each do |i|
-      i.each do |k,v|
-        final_transformed_letters.push(k)
-      end
-    end
-
-    string = string.split("")
-
-    # check if original string has any !?,.-/ signs and if yes, add them to the final string
-    signs_array = ["!", "?", ",", ".", "-", "/"]
-    while (string.join.count "!?,.-/") != (final_transformed_letters.join.count "!?,.-/") do
-      signs_array.each do |sign|
-        next if string.index(sign).nil?
-
-        string.each_with_index do |v,i|
-          if v == sign
-            final_transformed_letters.insert(i, sign)
-          end
+    else
+      key.abs.times do
+        if index == 0
+          index = 25
+        else
+          index -= 1
         end
       end
     end
-    final_transformed_letters = final_transformed_letters.compact
-
-    # check if original string has any empty spaces and if yes, add them to the final string
-    while (string.join.count " ") != (final_transformed_letters.join.count " ") do
-      next if string.index(" ").nil?
-
-      string.each_with_index do |v,i|
-        if v == " "
-          final_transformed_letters.insert(i, " ")
-        end
-      end
-    end
-
-    # transform the array of letters into a string
-    final_string = final_transformed_letters.join
-
-    # switch letters that need to be uppercase to uppercase
-    0.upto(og_string.length-1) do |n|
-      if og_string[n] == og_string[n].upcase
-        final_string[n] = final_string[n].upcase
-      end
-    end
-
-    # return the final string
-    p final_string
-    return final_string
+    shifted_char = alphabet[index]
+    shifted_string_arr.push(shifted_char)
   end
+
+  shifted_string = shifted_string_arr.join
+
+  # switch letters that need to be uppercase to uppercase
+  0.upto(string.length-1) do |n|
+    next unless alphabet.include?(string[n].downcase)
+
+    if string[n] == string[n].upcase
+      shifted_string[n] = shifted_string[n].upcase
+    end
+  end
+
+  p shifted_string
+  return shifted_string
 end
-caesar_cipher('hello!?How r u...?',5)
+caesar_cipher('Hello! How r u? xo', 5)
